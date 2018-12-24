@@ -351,8 +351,8 @@
 
 
 .rotate-scale-up {
-	-webkit-animation: rotate-scale-up 2s linear infinite both;
-	        animation: rotate-scale-up 2s linear infinite both;
+	-webkit-animation: rotate-scale-up 4s linear infinite both;
+	        animation: rotate-scale-up 4s linear infinite both;
 }
 
 /* ----------------------------------------------
