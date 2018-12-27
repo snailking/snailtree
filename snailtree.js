@@ -1,4 +1,4 @@
-var contractAddress="0xa94ea08663015AD4B1E670E4ee635210b968b5a7";
+var contractAddress="0xbe24Ea25564433e8A4b336964E33800f5A37B487";
 
 /* WEB3 DETECTION */
 // TESTNET!!
