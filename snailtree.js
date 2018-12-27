@@ -260,7 +260,7 @@ function fastUpdate(){
 function updateText(){
 	doc_contractBalance.innerHTML = a_contractBalance;
 	doc_gameRound.innerHTML = a_gameRound;
-	doc_roundPot.innerHTML = (a_jackPot / 2).toFixed(4);
+	doc_roundPot.innerHTML = (a_jackPot / 5).toFixed(4);
 	doc_treePot.innerHTML = a_treePot;
 	doc_wonkPot.innerHTML = a_wonkPot;
 	doc_thronePot.innerHTML = a_thronePot;
