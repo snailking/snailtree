@@ -1,7 +1,6 @@
 var contractAddress="0xbe24Ea25564433e8A4b336964E33800f5A37B487";
 
 /* WEB3 DETECTION */
-// TESTNET!!
 var web3;
 
 window.addEventListener("load", function() {
@@ -9,11 +8,11 @@ window.addEventListener("load", function() {
         web3 = new Web3(web3.currentProvider);
         web3.version.getNetwork(function(error, result) {
             if (!error) {
-                if (result == "3") {
+                if (result == "1") {
 					//////console.log("Mainnet successfully loaded!");
                 } else {
                     //////console.log("You must be on the Testnet to play SnailFarm 3!");
-					web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/f423492af8504d94979d522c3fbf3794"));
+					web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/f423492af8504d94979d522c3fbf3794"));
 					//modal2.style.display = "block";
                 }
             }
@@ -21,7 +20,7 @@ window.addEventListener("load", function() {
     } else {
         //////console.log("Web3 library not found.");
 		//modal2.style.display = "block";
-        web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/f423492af8504d94979d522c3fbf3794"));
+        web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/f423492af8504d94979d522c3fbf3794"));
     }
 });
 
@@ -115,7 +114,7 @@ var doc_tradeReward2 = document.getElementById('tradereward2');
 var doc_progressBar = document.getElementById('progressbarpecan');
 var doc_fieldPecanReward = document.getElementById('fieldpecanreward');
 var doc_boostReady = document.getElementById('boostready');
-var doc_launchTimer = document.getElementById('launchtimer');
+//var doc_launchTimer = document.getElementById('launchtimer');
 
 /* UTILITIES */
 
@@ -150,13 +149,14 @@ function date24() {
 
 //Unique check for prelaunch
 function checkLaunch(){
-	var blocktime = Math.round((new Date()).getTime() / 1000); //current blocktime should be Unix timestamp
-	if(blocktime < timeLaunch){
+	//var blocktime = Math.round((new Date()).getTime() / 1000); //current blocktime should be Unix timestamp
+	//if(blocktime < timeLaunch){
 		prelaunch_modal.style.display = "block";
-	}
+	//}
 }
 
 //Prelaunch timer
+/*
 function prelaunchTimer(){
 	var blocktime = Math.round((new Date()).getTime() / 1000); //current blocktime should be Unix timestamp
 	_timeLeft = timeLaunch - blocktime;
@@ -170,7 +170,7 @@ function prelaunchTimer(){
 	
 	doc_launchTimer.innerHTML = downtime_hours + ":" + downtime_minutes + ":" + downtime_seconds;
 }
-	
+*/	
 //Time since player claim, converted to text
 function timeSincePlayerClaim(){
 	var blocktime = Math.round((new Date()).getTime() / 1000); //current blocktime should be Unix timestamp
@@ -252,7 +252,7 @@ function fastUpdate(){
 	fastupdateEtherShare();
 	fastupdatePecanShare();
 	computeWonkWonk();
-	prelaunchTimer();
+	//prelaunchTimer();
 	setTimeout(fastUpdate, 100);
 }
 
