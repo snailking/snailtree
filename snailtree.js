@@ -59,7 +59,9 @@ window.onclick = function(event) {
 /* VARIABLES */
 
 var timeNow;
-var timeLaunch = 1546099321;
+var timeLaunch = 1546099245;
+var launchBlock = 6974738;
+//var dateBlock = new Date("December 29, 2018 16:00:45");
 
 var a_contractBalance;
 var a_gameRound;
@@ -145,13 +147,21 @@ function date24() {
 	d = new Date();
 	datetext = d.toTimeString();
 	datetext = datetext.split(' ')[0];
+}	
+
+//Get timestamp for log
+function dateLog(_blockNumber) {
+	d = new Date((timeLaunch + ((_blockNumber - launchBlock) * 14.6)) * 1000);
+	console.log(d);
+	datetext = d.toTimeString();
+	datetext = datetext.split(' ')[0];
 }
 
 //Unique check for prelaunch
 function checkLaunch(){
 	//var blocktime = Math.round((new Date()).getTime() / 1000); //current blocktime should be Unix timestamp
 	//if(blocktime < timeLaunch){
-		prelaunch_modal.style.display = "block";
+		prelaunch_modal.style.display = "none";
 	//}
 }
 
@@ -1161,6 +1171,34 @@ function checkHash(txarray, txhash) {
 var logboxscroll = document.getElementById('logboxscroll');
 var eventlogdoc = document.getElementById("eventlog");
 
+myContract.allEvents({ fromBlock: launchBlock, toBlock: 'latest' }).get(function(error, result){
+	if(!error){
+		console.log(result);
+		var i = 0;
+		for(i = 0; i < result.length; i++){
+			if(checkHash(storetxhash, result[i].transactionHash) != 0) {
+				dateLog(result[i].blockNumber);
+				if(result[i].event == "GavePecan"){
+					eventlogdoc.innerHTML += "<br>[" + datetext + "] " + formatEthAdr(result[i].args.player) + " gave " + result[i].args.pecan + " Pecans to Wonkers, and got " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH in exchange!";
+					logboxscroll.scrollTop = logboxscroll.scrollHeight;
+				} else if(result[i].event == "PlantedRoot"){
+					eventlogdoc.innerHTML += "<br>[" + datetext + "] " + formatEthAdr(result[i].args.player) + " planted a root with " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH. Their tree reaches " + result[i].args.treesize + " in size.";
+					logboxscroll.scrollTop = logboxscroll.scrollHeight;
+				} else if(result[i].event == "ClaimedShare"){
+					eventlogdoc.innerHTML += "<br>[" + datetext + "] " + formatEthAdr(result[i].args.player) + " claimed their share worth " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH and got " + result[i].args.pecan + " Pecans.";
+					logboxscroll.scrollTop = logboxscroll.scrollHeight;
+				} else if(result[i].event == "GrewTree"){
+					eventlogdoc.innerHTML += "<br>[" + datetext + "] " + formatEthAdr(result[i].args.player) + " grew their Tree and won " + result[i].args.pecan + " Pecans. Their boost is " + result[i].args.boost + "x.";
+					logboxscroll.scrollTop = logboxscroll.scrollHeight;
+				}
+			}
+		}
+	}
+	else{
+		console.log("problem!");
+	}
+});
+
 var plantedrootEvent = myContract.PlantedRoot();
 
 plantedrootEvent.watch(function(error, result){
@@ -1173,7 +1211,24 @@ plantedrootEvent.watch(function(error, result){
 		}
 	}
 });
-
+/*
+myContract.PlantedRoot({}, { fromBlock: launchBlock, toBlock: 'latest' }).get(function(error, result){
+	if(!error){
+		//console.log(result);
+		var i = 0;
+		for(i = 0; i < result.length; i++){
+			if(checkHash(storetxhash, result[i].transactionHash) != 0) {
+				//dateLog(result[i].blockNumber);
+				eventlogdoc.innerHTML += "<br>[" + result[i].blockNumber + "] " + formatEthAdr(result[i].args.player) + " planted a root with " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH. Their tree reaches " + result[i].args.treesize + " in size.";
+				logboxscroll.scrollTop = logboxscroll.scrollHeight;
+			}
+		}
+	}
+	else{
+		console.log("problem!");
+	}
+});
+*/
 var claimedshareEvent = myContract.ClaimedShare();
 
 claimedshareEvent.watch(function(error, result){
@@ -1186,7 +1241,23 @@ claimedshareEvent.watch(function(error, result){
 		}
 	}
 });
-
+/*
+myContract.ClaimedShare({}, { fromBlock: launchBlock, toBlock: 'latest' }).get(function(error, result){
+	if(!error){
+		//console.log(result);
+		var i = 0;
+		for(i = 0; i < result.length; i++){
+			if(checkHash(storetxhash, result[i].transactionHash) != 0) {
+				eventlogdoc.innerHTML += "<br>[CLAIM] " + formatEthAdr(result[i].args.player) + " claimed their share worth " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH and got " + result[i].args.pecan + " Pecans.";
+				logboxscroll.scrollTop = logboxscroll.scrollHeight;
+			}
+		}
+	}
+	else{
+		console.log("problem!");
+	}
+});
+*/
 var grewtreeEvent = myContract.GrewTree();
 
 grewtreeEvent.watch(function(error, result){
@@ -1199,7 +1270,23 @@ grewtreeEvent.watch(function(error, result){
 		}
 	}
 });
-
+/*
+myContract.GrewTree({}, { fromBlock: launchBlock, toBlock: 'latest' }).get(function(error, result){
+	if(!error){
+		//console.log(result);
+		var i = 0;
+		for(i = 0; i < result.length; i++){
+			if(checkHash(storetxhash, result[i].transactionHash) != 0) {
+				eventlogdoc.innerHTML += "<br>[GREW] " + formatEthAdr(result[i].args.player) + " grew their Tree and won " + result[i].args.pecan + " Pecans. Their boost is " + result[i].args.boost + "x.";
+				logboxscroll.scrollTop = logboxscroll.scrollHeight;
+			}
+		}
+	}
+	else{
+		console.log("problem!");
+	}
+});
+*/
 var wonroundEvent = myContract.WonRound();
 
 wonroundEvent.watch(function(error, result){
@@ -1213,6 +1300,8 @@ wonroundEvent.watch(function(error, result){
 	}
 });
 
+
+
 var gavepecanEvent = myContract.GavePecan();
 
 gavepecanEvent.watch(function(error, result){
@@ -1225,7 +1314,23 @@ gavepecanEvent.watch(function(error, result){
 		}
 	}
 });
-
+/*
+myContract.GavePecan({}, { fromBlock: launchBlock, toBlock: 'latest' }).get(function(error, result){
+	if(!error){
+		//console.log(result);
+		var i = 0;
+		for(i = 0; i < result.length; i++){
+			if(checkHash(storetxhash, result[i].transactionHash) != 0) {
+				eventlogdoc.innerHTML += "<br>[GAVE] " + formatEthAdr(result[i].args.player) + " gave " + result[i].args.pecan + " Pecans to Wonkers, and got " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH in exchange!";
+				logboxscroll.scrollTop = logboxscroll.scrollHeight;
+			}
+		}
+	}
+	else{
+		console.log("problem!");
+	}
+});
+*/
 var withdrewbalanceEvent = myContract.WithdrewBalance();
 
 withdrewbalanceEvent.watch(function(error, result){
@@ -1264,3 +1369,8 @@ boostedpotEvent.watch(function(error, result){
 		}
 	}
 });
+/*
+const filter = { fromBlock: launchBlock, toBlock: 'latest'}; // filter for your address
+const events = myContract.allEvents(filter); // get all events
+console.log(events);
+*/
