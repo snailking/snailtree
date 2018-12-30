@@ -1205,11 +1205,24 @@ var wonroundEvent = myContract.WonRound();
 wonroundEvent.watch(function(error, result){
     if(!error){
 		//////////console.log(result);
-		//if(checkHash(storetxhash, result.transactionHash) != 0) {
+		if(checkHash(storetxhash, result.transactionHash) != 0) {
 			date24();
 			eventlogdoc.innerHTML += "<br>[" + datetext + "] " + formatEthAdr(result.args.player) + " WINS ROUND " + result.args.round + " AND EARNS " + formatEthValue2(web3.fromWei(result.args.eth,'ether')) + " ETH!";
 			logboxscroll.scrollTop = logboxscroll.scrollHeight;
-		//}
+		}
+	}
+});
+
+var gavepecanEvent = myContract.GavePecan();
+
+gavepecanEvent.watch(function(error, result){
+	if(!error){
+		//////////console.log(result);
+		if(checkHash(storetxhash, result.transactionHash) != 0) {
+			date24();
+			eventlogdoc.innerHTML += "<br>[" + datetext + "] " + formatEthAdr(result.args.player) + " gave " + result.args.pecan + " Pecans to Wonkers, and got " + formatEthValue2(web3.fromWei(result.args.eth,'ether')) + " ETH in exchange!";
+			logboxscroll.scrollTop = logboxscroll.scrollHeight;
+		}
 	}
 });
 
