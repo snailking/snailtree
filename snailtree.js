@@ -56,12 +56,25 @@ window.onclick = function(event) {
     }
 }
 
+/* PAST EVENT LOG */
+
+var timeLaunch = 1546099245;
+var launchBlock = 6974738;
+
+var twoDaysBlock = 0;
+var ranLog = false;
+
+function checkBlock(){
+	web3.eth.getBlockNumber(function (error, result){
+		twoDaysBlock = result - 12000;
+	});
+}
+
+checkBlock();
+
 /* VARIABLES */
 
 var timeNow;
-var timeLaunch = 1546099245;
-var launchBlock = 6974738;
-//var dateBlock = new Date("December 29, 2018 16:00:45");
 
 var a_contractBalance;
 var a_gameRound;
@@ -132,7 +145,9 @@ function formatEthValue2(ethstr){
 
 //Truncates ETH address to first 8 numbers
 function formatEthAdr(adr){
-	return adr.substring(0, 10);
+	var _smallAdr = adr.substring(0, 10);
+	var _stringLink = '<a href="https://etherscan.io/address/' + adr + '" target="_blank">' + _smallAdr + '</a>';
+	return _stringLink;
 }
 
 //Adds spaces between integers
@@ -164,23 +179,7 @@ function checkLaunch(){
 		prelaunch_modal.style.display = "none";
 	//}
 }
-
-//Prelaunch timer
-/*
-function prelaunchTimer(){
-	var blocktime = Math.round((new Date()).getTime() / 1000); //current blocktime should be Unix timestamp
-	_timeLeft = timeLaunch - blocktime;
 	
-	downtime_hours = Math.floor(_timeLeft / 3600);
-	downtime_minutes = Math.floor((_timeLeft % 3600) / 60);
-	downtime_seconds = Math.floor((_timeLeft % 3600) % 60);
-	if(downtime_hours < 10) { downtime_hours = "0" + downtime_hours; }
-	if(downtime_minutes < 10) { downtime_minutes = "0" + downtime_minutes; }
-	if(downtime_seconds < 10) { downtime_seconds = "0" + downtime_seconds; }
-	
-	doc_launchTimer.innerHTML = downtime_hours + ":" + downtime_minutes + ":" + downtime_seconds;
-}
-*/	
 //Time since player claim, converted to text
 function timeSincePlayerClaim(){
 	var blocktime = Math.round((new Date()).getTime() / 1000); //current blocktime should be Unix timestamp
@@ -253,6 +252,7 @@ function slowUpdate(){
 	computePecanLeft();
 	computeProgressBar();
 	updateText();
+	runLog();
 	setTimeout(slowUpdate, 4000);
 }
 
@@ -1171,33 +1171,41 @@ function checkHash(txarray, txhash) {
 var logboxscroll = document.getElementById('logboxscroll');
 var eventlogdoc = document.getElementById("eventlog");
 
-myContract.allEvents({ fromBlock: launchBlock, toBlock: 'latest' }).get(function(error, result){
-	if(!error){
-		console.log(result);
-		var i = 0;
-		for(i = 0; i < result.length; i++){
-			if(checkHash(storetxhash, result[i].transactionHash) != 0) {
-				dateLog(result[i].blockNumber);
-				if(result[i].event == "GavePecan"){
-					eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " gave " + result[i].args.pecan + " Pecans to Wonkers, and got " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH in exchange!";
+function runLog(){
+	if(ranLog == false && twoDaysBlock > 0){
+		ranLog = true;
+		myContract.allEvents({ fromBlock: twoDaysBlock, toBlock: 'latest' }).get(function(error, result){
+			if(!error){
+				console.log(result);
+				var i = 0;
+				for(i = 0; i < result.length; i++){
+					if(checkHash(storetxhash, result[i].transactionHash) != 0) {
+						dateLog(result[i].blockNumber);
+						if(result[i].event == "GavePecan"){
+							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " gave " + result[i].args.pecan + " Pecans to Wonkers, and got " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH in exchange!";							
+						} else if(result[i].event == "PlantedRoot"){
+							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " planted a root with " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH. Their tree reaches " + result[i].args.treesize + " in size.";
+						} else if(result[i].event == "ClaimedShare"){
+							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " claimed their share worth " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH and got " + result[i].args.pecan + " Pecans.";
+						} else if(result[i].event == "GrewTree"){
+							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " grew their Tree and won " + result[i].args.pecan + " Pecans. Their boost is " + result[i].args.boost + "x.";
+						} else if(result[i].event == "WithdrewBalance"){
+							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result.args.player) + " withdrew " + formatEthValue2(web3.fromWei(result.args.eth,'ether')) + " ETH from their balance.";
+						} else if(result[i].event == "PaidThrone"){
+							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result.args.player) + " paid tribute to the SnailThrone! " + formatEthValue2(web3.fromWei(result.args.eth,'ether')) + " ETH have been sent.";
+						} else if(result[i].event == "BoostedPot"){
+							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result.args.player) + " makes a generous " + formatEthValue2(web3.fromWei(result.args.eth,'ether')) + " ETH donation to the JackPot.";
+						}
 					logboxscroll.scrollTop = logboxscroll.scrollHeight;
-				} else if(result[i].event == "PlantedRoot"){
-					eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " planted a root with " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH. Their tree reaches " + result[i].args.treesize + " in size.";
-					logboxscroll.scrollTop = logboxscroll.scrollHeight;
-				} else if(result[i].event == "ClaimedShare"){
-					eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " claimed their share worth " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH and got " + result[i].args.pecan + " Pecans.";
-					logboxscroll.scrollTop = logboxscroll.scrollHeight;
-				} else if(result[i].event == "GrewTree"){
-					eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " grew their Tree and won " + result[i].args.pecan + " Pecans. Their boost is " + result[i].args.boost + "x.";
-					logboxscroll.scrollTop = logboxscroll.scrollHeight;
+					}
 				}
 			}
-		}
+			else{
+				console.log("problem!");
+			}
+		});
 	}
-	else{
-		console.log("problem!");
-	}
-});
+}
 
 var plantedrootEvent = myContract.PlantedRoot();
 
