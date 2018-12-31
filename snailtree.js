@@ -1190,11 +1190,11 @@ function runLog(){
 						} else if(result[i].event == "GrewTree"){
 							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " grew their Tree and won " + result[i].args.pecan + " Pecans. Their boost is " + result[i].args.boost + "x.";
 						} else if(result[i].event == "WithdrewBalance"){
-							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result.args.player) + " withdrew " + formatEthValue2(web3.fromWei(result.args.eth,'ether')) + " ETH from their balance.";
+							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " withdrew " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH from their balance.";
 						} else if(result[i].event == "PaidThrone"){
-							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result.args.player) + " paid tribute to the SnailThrone! " + formatEthValue2(web3.fromWei(result.args.eth,'ether')) + " ETH have been sent.";
+							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " paid tribute to the SnailThrone! " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH have been sent.";
 						} else if(result[i].event == "BoostedPot"){
-							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result.args.player) + " makes a generous " + formatEthValue2(web3.fromWei(result.args.eth,'ether')) + " ETH donation to the JackPot.";
+							eventlogdoc.innerHTML += "<br>[~" + datetext + "] " + formatEthAdr(result[i].args.player) + " makes a generous " + formatEthValue2(web3.fromWei(result[i].args.eth,'ether')) + " ETH donation to the JackPot.";
 						}
 					logboxscroll.scrollTop = logboxscroll.scrollHeight;
 					}
